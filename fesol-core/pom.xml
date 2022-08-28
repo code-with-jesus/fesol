@@ -9,7 +9,9 @@
 
 	<properties>
 		<jdk.version>11</jdk.version>
-		<spring.version>5.0.6.RELEASE</spring.version>
+		<spring.version>5.3.22</spring.version>
+		<spring-security.version>5.3.3.RELEASE</spring-security.version>
+		<spring-data.version>2.4.0</spring-data.version>
 		<hibernate.version>5.3.6.Final</hibernate.version>
 		<javax.validation.version>1.1.0.Final</javax.validation.version>
 		<mysql.connector.version>8.0.30</mysql.connector.version>
@@ -17,7 +19,9 @@
 		<ehcache.version>2.4.2</ehcache.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.18.20</lombok.version>
-		<HikariCP.version>3.1.0</HikariCP.version>
+		<jackson.version>2.9.4</jackson.version>
+		<jwt-api.version>0.11.5</jwt-api.version>
+		<HikariCP.version>5.0.1</HikariCP.version>
 	</properties>
 
 	<dependencies>
@@ -49,6 +53,36 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>${spring-data.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring-security.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring-security.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring-security.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jwt-api.version}</version>
 		</dependency>
 
 		<dependency>
@@ -93,6 +127,12 @@
 			<artifactId>ehcache-core</artifactId>
 			<version>${ehcache.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -101,6 +141,8 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- Jaxb -->
+		
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
@@ -108,7 +150,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- for web servlet -->
+		<!-- Web servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -124,7 +166,7 @@
             <scope>provided</scope>
         </dependency>
         
-        <!-- junit 5, unit test -->
+        <!-- Junit 5 -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
@@ -159,7 +201,6 @@
 					<version>3.0.0</version>
 					<configuration>
 						<warSourceDirectory>src/main/webapp</warSourceDirectory>
-						<warName>api</warName>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
 				</plugin>
