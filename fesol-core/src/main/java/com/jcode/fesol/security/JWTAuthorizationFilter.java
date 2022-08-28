@@ -1,59 +1,49 @@
 package com.jcode.fesol.security;
 
-import static com.jcode.fesol.security.Constants.HEADER_AUTHORIZACION_KEY;
-import static com.jcode.fesol.security.Constants.SECRET_KEY;
+import static com.jcode.fesol.security.Constants.AUTHORITIES_KEY;
+import static com.jcode.fesol.security.Constants.HEADER_AUTHORIZATION_KEY;
 import static com.jcode.fesol.security.Constants.TOKEN_BEARER_PREFIX;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 
-public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
-
-	public JWTAuthorizationFilter(AuthenticationManager authManager) {
-		super(authManager);
-	}
+public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		String header = req.getHeader(HEADER_AUTHORIZACION_KEY);
-		if (header == null || !header.startsWith(TOKEN_BEARER_PREFIX)) {
-			chain.doFilter(req, res);
-			return;
-		}
-		UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		chain.doFilter(req, res);
-	}
 
-	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-		String token = request.getHeader(HEADER_AUTHORIZACION_KEY);
-		if (token != null) {
-			// Se procesa el token y se recupera el usuario.
-			String user = ((JwtParser) Jwts.parserBuilder()
-		            .setSigningKey(Decoders.BASE64.decode(SECRET_KEY)))
-		            .parseClaimsJws(token.replace(TOKEN_BEARER_PREFIX, ""))
-		            .getBody().getSubject();
-
-			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+		try {
+			String authenticationHeader = request.getHeader(HEADER_AUTHORIZATION_KEY);
+			if (authenticationHeader != null && authenticationHeader.startsWith(TOKEN_BEARER_PREFIX)) {
+				String token = request.getHeader(HEADER_AUTHORIZATION_KEY).replace(TOKEN_BEARER_PREFIX, "");
+				Claims claims = TokenProvider.getClaims(token);
+				if (claims.get(AUTHORITIES_KEY) != null) {
+					SecurityContextHolder.getContext().setAuthentication(TokenProvider.getAuthentication(claims));
+				} else {
+					SecurityContextHolder.clearContext();
+				}
+			} else {
+				SecurityContextHolder.clearContext();
 			}
-			return null;
+			chain.doFilter(request, response);
+
+		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
 		}
-		return null;
 	}
+
 }

@@ -1,9 +1,6 @@
 package com.jcode.fesol.user.service;
 
-import static java.util.Collections.emptyList;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,8 +19,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserAccount userAccount = userRepository.findByUsername(username);
 		if (userAccount == null) {
-			throw new UsernameNotFoundException(username);
+			throw new UsernameNotFoundException("Invalid username or password");
 		}
-		return new User(userAccount.getUsername(), userAccount.getPassword(), emptyList());
+		return UserDetailsMapper.build(userAccount);
 	}
 }

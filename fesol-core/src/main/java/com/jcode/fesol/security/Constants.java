@@ -5,10 +5,12 @@ public class Constants {
 	// Spring Security
 
 	public static final String LOGIN_URL = "/login";
-	public static final String HEADER_AUTHORIZACION_KEY = "Authorization";
+	public static final String HEADER_AUTHORIZATION_KEY = "Authorization";
 	public static final String TOKEN_BEARER_PREFIX = "Bearer ";
 
 	// JWT
+	
+	public static final String AUTHORITIES_KEY = "authorities";
 
 	public static final String ISSUER_INFO = "https://www.fesol.co/";
 	public static final String SECRET_KEY = "VDBwJDNjcjN0IQ==";
