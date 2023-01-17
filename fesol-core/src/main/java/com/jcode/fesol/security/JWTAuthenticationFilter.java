@@ -1,16 +1,17 @@
 package com.jcode.fesol.security;
 
-import static com.jcode.fesol.security.Constants.*;
+import static com.jcode.fesol.security.Constants.HEADER_AUTHORIZATION_KEY;
+import static com.jcode.fesol.security.Constants.TOKEN_BEARER_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,24 +21,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.jcode.fesol.user.model.UserAccount;
 
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	private AuthenticationManager authenticationManager;
 
-	public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		try {
-			UserAccount userAccount = new ObjectMapper().readValue(request.getInputStream(), UserAccount.class);
+			UserAccount userAccount =  null;
+			
+	        if (request.getParameter("username") != null  && request.getParameter("password") != null) {
+	        	userAccount = new UserAccount();              
+	        	userAccount.setUsername(request.getParameter("username"));
+	        	userAccount.setPassword(request.getParameter("password"));                
+	        }
+	        else {
+	        	userAccount = new ObjectMapper().readValue(request.getInputStream(), UserAccount.class);
+	        }
 
-			return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-					userAccount.getUsername(), userAccount.getPassword(), new ArrayList<>()));
-		} catch (IOException e) {
-			throw new RuntimeJsonMappingException(e.getMessage());
+			return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
+					userAccount.getUsername(), userAccount.getPassword(), Collections.emptyList()));
+		}
+		catch (IOException ex) {
+			throw new RuntimeJsonMappingException(ex.getMessage());
+		}
+		catch (AuthenticationException ex) {
+			System.out.println(ex.getMessage());
+			throw ex;
 		}
 	}
 

@@ -19,7 +19,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -45,8 +44,7 @@ public class TokenProvider {
 	}
 
 	public static Claims getClaims(final String token) {
-		return ((JwtParser) Jwts.parserBuilder().setSigningKey(Decoders.BASE64.decode(SECRET_KEY)))
-				.parseClaimsJws(token).getBody();
+		return Jwts.parserBuilder().setSigningKey(Decoders.BASE64.decode(SECRET_KEY)).build().parseClaimsJws(token).getBody();
 	}
 
 	public static UsernamePasswordAuthenticationToken getAuthentication(final Claims claims) {

@@ -1,43 +1,53 @@
 package com.jcode.fesol.user.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jcode.fesol.user.model.UserAccount;
-import com.jcode.fesol.user.repository.UserAccountRepository;
+import com.jcode.fesol.user.service.UserAccountService;
 
-@RestController("/v1/users")
+@RestController
+@RequestMapping(value="/v1/users")
 public class UserAccountController {
+	
+	@Autowired
+	@Qualifier("userDetailsService")
+	private UserAccountService userAccountService;
 
 	@Autowired
-	private UserAccountRepository userAccountRepository;
-
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+	private PasswordEncoder passwordEncoder;
+	
 	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping
 	public List<UserAccount> getAllUserAccounts() {
-		return userAccountRepository.findAll();
+		return userAccountService.findAll();
 	}
 
 	@GetMapping("/{username}")
-	public UserAccount getUserAccount(@PathVariable String username) {
-		return userAccountRepository.findByUsername(username);
+	public ResponseEntity<UserAccount> findUserAccount(@PathVariable String username) {
+		Optional<UserAccount> userAccountOptional = userAccountService.findByUsername(username);
+		if (userAccountOptional.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(userAccountOptional.get());
 	}
 	
 	@PostMapping
 	public void saveUserAccount(@RequestBody UserAccount userAccount) {
 		userAccount.setId(UUID.randomUUID().toString());
-		userAccount.setPassword(bCryptPasswordEncoder.encode(userAccount.getPassword()));
-		userAccountRepository.save(userAccount);
+		userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
+		userAccountService.save(userAccount);
 	}
 }
