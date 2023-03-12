@@ -14,12 +14,12 @@ import lombok.Setter;
 @Table(name = "user_profile")
 public class UserProfile {
 
-	// Properties
+    // Properties
 
-	@Id
-	private Integer id;
+    @Id
+    private Integer id;
 
-	@Column(name = "name", length = 255, unique = true, nullable = false)
-	private String name;
-	
+    @Column(name = "name", length = 255, unique = true, nullable = false)
+    private String name;
+
 }

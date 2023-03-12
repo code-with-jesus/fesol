@@ -25,33 +25,31 @@ import io.jsonwebtoken.security.Keys;
 
 public class TokenProvider {
 
-	private TokenProvider() {
-		// Hide constructor
-	}
+    private TokenProvider() {
+        // Hide constructor
+    }
 
-	public static String generateToken(Authentication auth) {
-		final String authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.joining(","));
+    public static String generateToken(Authentication auth) {
+        final String authorities =
+            auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
-		final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+        final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
 
-		return Jwts.builder().setSubject(((User) auth.getPrincipal()).getUsername())
-				.claim(AUTHORITIES_KEY, authorities)
-				.signWith(secretKey)
-				.setIssuedAt(new Date()).setIssuer(ISSUER_INFO)
-				.setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
-				.compact();
-	}
+        return Jwts.builder().setSubject(((User) auth.getPrincipal()).getUsername()).claim(AUTHORITIES_KEY, authorities)
+            .signWith(secretKey).setIssuedAt(new Date()).setIssuer(ISSUER_INFO)
+            .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME)).compact();
+    }
 
-	public static Claims getClaims(final String token) {
-		return Jwts.parserBuilder().setSigningKey(Decoders.BASE64.decode(SECRET_KEY)).build().parseClaimsJws(token).getBody();
-	}
+    public static Claims getClaims(final String token) {
+        return Jwts.parserBuilder().setSigningKey(Decoders.BASE64.decode(SECRET_KEY)).build().parseClaimsJws(token)
+            .getBody();
+    }
 
-	public static UsernamePasswordAuthenticationToken getAuthentication(final Claims claims) {
-		final Collection<SimpleGrantedAuthority> authorities = Arrays
-				.stream(claims.get(AUTHORITIES_KEY).toString().split(",")).map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
-		return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
-	}
+    public static UsernamePasswordAuthenticationToken getAuthentication(final Claims claims) {
+        final Collection<SimpleGrantedAuthority> authorities =
+            Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(",")).map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
+    }
 
 }

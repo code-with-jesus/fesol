@@ -15,39 +15,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jcode.fesol.user.dto.UserDto;
 import com.jcode.fesol.user.model.UserAccount;
 import com.jcode.fesol.user.service.UserAccountService;
 
 @RestController
-@RequestMapping(value="/v1/users")
+@RequestMapping(value = "/v1/users")
 public class UserAccountController {
-	
-	@Autowired
-	@Qualifier("userDetailsService")
-	private UserAccountService userAccountService;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@GetMapping
-	public List<UserAccount> getAllUserAccounts() {
-		return userAccountService.findAll();
-	}
+    @Autowired
+    @Qualifier("userDetailsService")
+    private UserAccountService userAccountService;
 
-	@GetMapping("/{username}")
-	public ResponseEntity<UserAccount> findUserAccount(@PathVariable String username) {
-		Optional<UserAccount> userAccountOptional = userAccountService.findByUsername(username);
-		if (userAccountOptional.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(userAccountOptional.get());
-	}
-	
-	@PostMapping
-	public void saveUserAccount(@RequestBody UserAccount userAccount) {
-		userAccount.setId(UUID.randomUUID().toString());
-		userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
-		userAccountService.save(userAccount);
-	}
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping
+    public List<UserDto> getAllUserAccounts() {
+        return userAccountService.findAll();
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserAccount> findUserAccount(@PathVariable String username) {
+        Optional<UserAccount> userAccountOptional = userAccountService.findByUsername(username);
+        if (userAccountOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userAccountOptional.get());
+    }
+
+    @PostMapping
+    public void saveUserAccount(@RequestBody UserAccount userAccount) {
+        userAccount.setId(UUID.randomUUID().toString());
+        userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
+        userAccountService.save(userAccount);
+    }
 }

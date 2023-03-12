@@ -23,29 +23,29 @@ import io.jsonwebtoken.UnsupportedJwtException;
 @Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
 
-		try {
-			String authenticationHeader = request.getHeader(HEADER_AUTHORIZATION_KEY);
-			if (authenticationHeader != null && authenticationHeader.startsWith(TOKEN_BEARER_PREFIX)) {
-				String token = request.getHeader(HEADER_AUTHORIZATION_KEY).replace(TOKEN_BEARER_PREFIX, "");
-				Claims claims = TokenProvider.getClaims(token);
-				if (claims.get(AUTHORITIES_KEY) != null) {
-					SecurityContextHolder.getContext().setAuthentication(TokenProvider.getAuthentication(claims));
-				} else {
-					SecurityContextHolder.clearContext();
-				}
-			} else {
-				SecurityContextHolder.clearContext();
-			}
-			chain.doFilter(request, response);
+        try {
+            String authenticationHeader = request.getHeader(HEADER_AUTHORIZATION_KEY);
+            if (authenticationHeader != null && authenticationHeader.startsWith(TOKEN_BEARER_PREFIX)) {
+                String token = request.getHeader(HEADER_AUTHORIZATION_KEY).replace(TOKEN_BEARER_PREFIX, "");
+                Claims claims = TokenProvider.getClaims(token);
+                if (claims.get(AUTHORITIES_KEY) != null) {
+                    SecurityContextHolder.getContext().setAuthentication(TokenProvider.getAuthentication(claims));
+                } else {
+                    SecurityContextHolder.clearContext();
+                }
+            } else {
+                SecurityContextHolder.clearContext();
+            }
+            chain.doFilter(request, response);
 
-		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-		}
-	}
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+        }
+    }
 
 }

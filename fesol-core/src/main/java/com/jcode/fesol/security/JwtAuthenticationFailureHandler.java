@@ -13,30 +13,28 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 public class JwtAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
-	private final HttpStatus statusErrorResponse;
+    private final HttpStatus statusErrorResponse;
 
-	public JwtAuthenticationFailureHandler(HttpStatus statusErrorResponse) {
-		this.statusErrorResponse = statusErrorResponse;
-	}
+    public JwtAuthenticationFailureHandler(HttpStatus statusErrorResponse) {
+        this.statusErrorResponse = statusErrorResponse;
+    }
 
-	public JwtAuthenticationFailureHandler() {
-		this.statusErrorResponse = HttpStatus.UNAUTHORIZED;
-	}
+    public JwtAuthenticationFailureHandler() {
+        this.statusErrorResponse = HttpStatus.UNAUTHORIZED;
+    }
 
-	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException e) throws IOException, ServletException {
-		response.setStatus(statusErrorResponse.value());
-		response.setContentType("application/json");
-		response.getWriter().append(jsonResponse());
-	}
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException e) throws IOException, ServletException {
+        response.setStatus(statusErrorResponse.value());
+        response.setContentType("application/json");
+        response.getWriter().append(jsonResponse());
+    }
 
-	private String jsonResponse() {
-		long date = new Date().getTime();
-		return "{\"timestamp\": " + date + ", "
-				+ "\"status\": " + statusErrorResponse.value() + ", "
-				+ "\"error\": \"Unauthorized\", "
-				+ "\"message\": \"Authentication failed: bad credentials\", "
-				+ "\"path\": \"/login\"}";
-	}
+    private String jsonResponse() {
+        long date = new Date().getTime();
+        return "{\"timestamp\": " + date + ", " + "\"status\": " + statusErrorResponse.value() + ", "
+            + "\"error\": \"Unauthorized\", " + "\"message\": \"Authentication failed: bad credentials\", "
+            + "\"path\": \"/login\"}";
+    }
 }
