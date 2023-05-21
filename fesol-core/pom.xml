@@ -153,7 +153,6 @@
 			<version>${mysql.connector.version}</version>
 		</dependency>
 
-		<!-- logging , spring 5 no more bridge, thanks spring-jcl -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
