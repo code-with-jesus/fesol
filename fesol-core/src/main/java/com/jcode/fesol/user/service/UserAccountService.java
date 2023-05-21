@@ -5,15 +5,16 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.jcode.fesol.user.dto.UserDto;
 import com.jcode.fesol.user.model.UserAccount;
 
 public interface UserAccountService extends UserDetailsService {
 
-	Optional<UserAccount> getUserAccount(long id);
+    Optional<UserAccount> getUserAccount(long id);
 
-	UserAccount save(UserAccount user);
+    UserAccount save(UserAccount user);
 
-	List<UserAccount> findAll();
+    List<UserDto> findAll();
 
-	Optional<UserAccount> findByUsername(String username);
+    Optional<UserAccount> findByUsername(String username);
 }
