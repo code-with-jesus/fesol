@@ -25,19 +25,43 @@ package com.jcode.fesol.user.dto;
 
 import java.util.Set;
 
-import lombok.Data;
-
 /**
  * 
  * @version $Id$
  */
-@Data
 public class UserDto {
 
     private String id;
-
     private String username;
-
     private Set<UserProfileDto> userProfiles;
+    
+	public UserDto() {
+		super();
+	}
+
+	public String getId() {
+		return id;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public Set<UserProfileDto> getUserProfiles() {
+		return userProfiles;
+	}
+	
+	public void setUserProfiles(Set<UserProfileDto> userProfiles) {
+		this.userProfiles = userProfiles;
+	}
+
 
 }

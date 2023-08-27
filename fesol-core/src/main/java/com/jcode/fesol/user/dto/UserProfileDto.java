@@ -23,15 +23,33 @@
  */
 package com.jcode.fesol.user.dto;
 
-import lombok.Data;
-
 /**
  * 
  * @version $Id$
  */
-@Data
 public class UserProfileDto {
 
     private Integer id;
     private String name;
+    
+	public UserProfileDto() {
+		super();
+	}
+
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+    
 }

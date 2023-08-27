@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.jcode.fesol.user.model.UserAccount;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -41,7 +41,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException ex) {
             throw new RuntimeJsonMappingException(ex.getMessage());
         } catch (AuthenticationException ex) {
-            System.out.println(ex.getMessage());
             throw ex;
         }
     }
